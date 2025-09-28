@@ -1,0 +1,28 @@
+meta {
+  name: Actualizar
+  type: http
+  seq: 4
+}
+
+put {
+  url: http://localhost:4000/api/residentes/1
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "nombre": "Juanete",
+    "apellido": "Pérez",
+    "rut": "22.233.222-2",
+    "correo": "juan.perez@mail.com",
+    "telefono": "987654321",
+    "tipo": "propietario",
+    "estado": "activo"
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,26 @@
+meta {
+  name: Crear Unidad
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:4000/api/unidades
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "id_condominio": 1,
+    "tipo": "departamento",
+    "numero": "A-101",
+    "superficie": 75.50,
+    "estado": "ocupada"
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+}

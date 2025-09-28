@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Adm_Condominios_API",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}
