@@ -37,9 +37,9 @@ npm install
 PORT=4000
 DB_HOST=localhost
 DB_PORT=3306
-DB_USER=root
-DB_PASS=toorpass
-DB_NAME=admin_condominios
+DB_USER=tu_usuario
+DB_PASS=tu_password
+DB_NAME=tu_basedatos
 ```
 
 4. Ejecutar el servidor:
