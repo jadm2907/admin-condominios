@@ -1,8 +1,10 @@
 import React from "react";
-import { Menu } from "antd";
+import { Menu, Typography, Drawer } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 
-const Sidebar = ({ selectedKey, onSelect, user }) => {
+const { Text } = Typography;
+
+const Sidebar = ({ selectedKey, onSelect, user, visible, onClose, isMobile, isLandscape }) => {
   const menuItems = [
     { key: "dashboard", label: "Dashboard" },
     {
@@ -72,21 +74,53 @@ const Sidebar = ({ selectedKey, onSelect, user }) => {
     },
   ];
 
-  return (
+  const sidebarContent = (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <Menu
         theme="dark"
         mode="inline"
         selectedKeys={[selectedKey]}
-        onClick={({ key }) => onSelect(key)}
+        onClick={({ key }) => {
+          onSelect(key);
+          if (isMobile) onClose();
+        }}
         items={menuItems}
-        style={{ flex: 1 }}
+        style={{ flex: 1, padding: "8px 0" }}
       />
-      <div style={{ padding: "16px", color: "#fff", textAlign: "center", borderTop: "1px solid rgba(255, 255, 255, 0.1)" }}>
-        <UserOutlined style={{ marginRight: "8px" }} />
-        {user ? `${user.nombre_usuario} (${user.rol})` : "Usuario"}
+      <div
+        style={{
+          padding: isMobile ? "16px" : "16px 8px",
+          color: "#fff",
+          textAlign: "center",
+          borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+          background: "rgba(0, 0, 0, 0.2)",
+          fontSize: isMobile && isLandscape ? "12px" : "14px",
+        }}
+      >
+        <UserOutlined style={{ marginRight: "8px", fontSize: isMobile ? "16px" : "14px" }} />
+        <Text
+          style={{ color: "#fff" }}
+          ellipsis={{ tooltip: user ? `${user.nombre_usuario} (${user.rol})` : "Usuario" }}
+        >
+          {user ? `${user.nombre_usuario} (${user.rol})` : "Usuario"}
+        </Text>
       </div>
     </div>
+  );
+
+  return isMobile ? (
+    <Drawer
+      placement="left"
+      closable={true}
+      onClose={onClose}
+      visible={visible}
+      width={isLandscape ? "50%" : "80%"}
+      bodyStyle={{ padding: 0, background: "#001529" }}
+    >
+      {sidebarContent}
+    </Drawer>
+  ) : (
+    sidebarContent
   );
 };
 

@@ -1,5 +1,5 @@
-import React from "react";
-import { Layout, theme } from "antd";
+import React, { useState, useEffect } from "react";
+import { Layout, theme, Grid } from "antd";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import Dashboard from "../components/Dashboard";
@@ -28,16 +28,42 @@ import UsuariosPage from "../pages/UsuariosPage";
 import LogsPage from "../pages/LogsPage";
 
 const { Content, Sider } = Layout;
+const { useBreakpoint } = Grid;
 
 const MainLayout = ({ selectedKey, setSelectedKey, data, user, notifications }) => {
-  const {
-    token: { colorBgContainer },
-  } = theme.useToken();
+  const { token: { colorBgContainer } } = theme.useToken();
+  const screens = useBreakpoint();
+  const isMobile = !screens.md; // Mobile if screen < 768px
+  const [sidebarVisible, setSidebarVisible] = useState(false);
+  const [isLandscape, setIsLandscape] = useState(false);
+
+  useEffect(() => {
+    const handleOrientation = () => {
+      if (window.screen.orientation) {
+        setIsLandscape(window.screen.orientation.type.includes("landscape"));
+      } else {
+        setIsLandscape(window.innerWidth > window.innerHeight);
+      }
+    };
+
+    handleOrientation();
+    window.addEventListener("orientationchange", handleOrientation);
+    window.addEventListener("resize", handleOrientation);
+
+    return () => {
+      window.removeEventListener("orientationchange", handleOrientation);
+      window.removeEventListener("resize", handleOrientation);
+    };
+  }, []);
+
+  const toggleSidebar = () => {
+    setSidebarVisible(!sidebarVisible);
+  };
 
   const renderContent = () => {
     switch (selectedKey) {
       case "dashboard":
-        return <Dashboard data={data} />;
+        return <Dashboard data={data} isLandscape={isLandscape} />;
       case "condominios":
         return <CondominiosPage data={data.condominios} />;
       case "unidades":
@@ -91,14 +117,41 @@ const MainLayout = ({ selectedKey, setSelectedKey, data, user, notifications }) 
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
-      <Sider collapsible>
-        <div style={{ height: 32, margin: 16, background: "rgba(255, 255, 255, 0.3)", borderRadius: 6, textAlign: "center", color: "#fff", lineHeight: "32px", fontWeight: "bold" }}>Nomos</div>
-        <Sidebar selectedKey={selectedKey} onSelect={setSelectedKey} user={user} />
-      </Sider>
+      {isMobile ? (
+        <Sidebar
+          selectedKey={selectedKey}
+          onSelect={setSelectedKey}
+          user={user}
+          visible={sidebarVisible}
+          onClose={() => setSidebarVisible(false)}
+          isMobile={isMobile}
+          isLandscape={isLandscape}
+        />
+      ) : (
+        <Sider collapsible width={isLandscape && !isMobile ? 300 : 250} collapsedWidth={80}>
+          <div style={{ height: 32, margin: 16, background: "rgba(255, 255, 255, 0.3)", borderRadius: 6, textAlign: "center", color: "#fff", lineHeight: "32px", fontWeight: "bold" }}>
+            Nomos
+          </div>
+          <Sidebar
+            selectedKey={selectedKey}
+            onSelect={setSelectedKey}
+            user={user}
+            visible={true}
+            isMobile={isMobile}
+            isLandscape={isLandscape}
+          />
+        </Sider>
+      )}
       <Layout>
-        <Header user={user} notifications={notifications} />
-        <Content style={{ margin: "16px" }}>
-          <div style={{ padding: 24, background: colorBgContainer, borderRadius: 8 }}>
+        <Header
+          user={user}
+          notifications={notifications}
+          onMenuToggle={toggleSidebar}
+          isMobile={isMobile}
+          isLandscape={isLandscape}
+        />
+        <Content style={{ margin: isMobile ? "8px" : "16px" }}>
+          <div style={{ padding: isMobile ? 12 : 24, background: colorBgContainer, borderRadius: 8, minHeight: "calc(100vh - 64px)" }}>
             {renderContent()}
           </div>
         </Content>
