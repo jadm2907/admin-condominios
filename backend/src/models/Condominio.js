@@ -1,6 +1,3 @@
-// ==============================
-// Modelo: Condominio
-// ==============================
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/db");
 
@@ -30,10 +27,18 @@ const Condominio = sequelize.define(
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
     },
+    fecha_eliminacion: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    estado: {
+      type: DataTypes.TINYINT(1),
+      defaultValue: 1,
+    },
   },
   {
     tableName: "Condominio",
-    timestamps: false, // porque usamos fecha_creacion manual
+    timestamps: false,
   }
 );
 

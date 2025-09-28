@@ -1,57 +1,61 @@
-const CondominioService = require("../services/condominioService");
-const HttpUtils = require("../utils/HttpUtils");
-const logger = require("../utils/logger");
+// src/controllers/condominioController.js
+const condominioService = require('../services/condominioService');
+const HttpUtils = require('../utils/HttpUtils');
+const logger = require('../utils/logger');
 
-exports.getCondominios = async (req, res) => {
+exports.getCondominios = async (req, res, next) => {
   try {
-    const condominios = await CondominioService.getAll();
-    HttpUtils.successResponse(res, condominios);
+    const data = await condominioService.getAll();
+    return HttpUtils.successResponse(res, data, 200);
   } catch (error) {
-    logger.error("Error al obtener condominios:", error);
-    HttpUtils.errorResponse(res, error);
+    logger.error(`Error al obtener condominios: ${error.message}`);
+    return next(error);
   }
 };
 
-exports.getCondominioById = async (req, res) => {
+exports.getCondominioById = async (req, res, next) => {
   try {
-    const condominio = await CondominioService.getById(req.params.id);
-    if (!condominio) return HttpUtils.notFoundResponse(res, "Condominio no encontrado");
-    HttpUtils.successResponse(res, condominio);
+    const data = await condominioService.getById(req.params.id);
+    if (!data) return HttpUtils.errorResponse(res, 'Condominio no encontrado', 404);
+    return HttpUtils.successResponse(res, data, 200);
   } catch (error) {
-    logger.error("Error al obtener condominio:", error);
-    HttpUtils.errorResponse(res, error);
+    logger.error(`Error al obtener condominio: ${error.message}`);
+    return next(error);
   }
 };
 
-exports.createCondominio = async (req, res) => {
+exports.createCondominio = async (req, res, next) => {
   try {
-    const condominio = await CondominioService.create(req.body);
-    logger.info(`[SUCCESS 201] POST /api/condominios - Condominio creado con éxito`);
-    HttpUtils.createdResponse(res, condominio);
+    const data = await condominioService.create(req.body);
+    logger.info('[SUCCESS] Condominio creado');
+    return HttpUtils.successResponse(res, data, 201);
   } catch (error) {
-    logger.error("Error al crear condominio:", error);
-    HttpUtils.errorResponse(res, error);
+    logger.error(`Error al crear condominio: ${error.message}`);
+    return next(error);
   }
 };
 
-exports.updateCondominio = async (req, res) => {
+exports.updateCondominio = async (req, res, next) => {
   try {
-    const condominio = await CondominioService.update(req.params.id, req.body);
-    if (!condominio) return HttpUtils.notFoundResponse(res, "Condominio no encontrado");
-    HttpUtils.successResponse(res, condominio);
+    const updated = await condominioService.update(req.params.id, req.body);
+    if (!updated) return HttpUtils.errorResponse(res, 'Condominio no encontrado', 404);
+    logger.info('[SUCCESS] Condominio actualizado');
+    return HttpUtils.successResponse(res, 'Condominio actualizado', 200);
   } catch (error) {
-    logger.error("Error al actualizar condominio:", error);
-    HttpUtils.errorResponse(res, error);
+    logger.error(`Error al actualizar condominio: ${error.message}`);
+    return next(error);
   }
 };
 
-exports.deleteCondominio = async (req, res) => {
+exports.deleteCondominio = async (req, res, next) => {
   try {
-    const deleted = await CondominioService.delete(req.params.id);
-    if (!deleted) return HttpUtils.notFoundResponse(res, "Condominio no encontrado");
-    HttpUtils.successResponse(res, { message: "Condominio eliminado con éxito" });
+    const deleted = await condominioService.delete(req.params.id);
+    if (!deleted) return HttpUtils.errorResponse(res, 'Condominio no encontrado', 404);
+    logger.info('[SUCCESS] Condominio eliminado (soft delete)');
+    return HttpUtils.successResponse(res, 'Condominio eliminado', 200);
   } catch (error) {
-    logger.error("Error al eliminar condominio:", error);
-    HttpUtils.errorResponse(res, error);
+    logger.error(`Error al eliminar condominio: ${error.message}`);
+    return next(error);
   }
 };
+

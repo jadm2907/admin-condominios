@@ -24,6 +24,10 @@ const Unidad = sequelize.define("Unidad", {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: true,
   },
+  fecha_eliminacion: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
   estado: {
     type: DataTypes.ENUM("ocupada", "vacia"),
     allowNull: true,

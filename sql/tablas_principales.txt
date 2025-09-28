@@ -1,0 +1,66 @@
+mysql> DESCRIBE Condominio;
++--------------------+---------------+------+-----+-------------------+-----------------------------------------------+
+| Field              | Type          | Null | Key | Default           | Extra                                         |
++--------------------+---------------+------+-----+-------------------+-----------------------------------------------+
+| id_condominio      | int           | NO   | PRI | NULL              | auto_increment                                |
+| nombre             | varchar(100)  | NO   | MUL | NULL              |                                               |
+| direccion          | varchar(200)  | YES  |     | NULL              |                                               |
+| rut                | varchar(20)   | YES  |     | NULL              |                                               |
+| fondo_reserva      | decimal(12,2) | YES  |     | 0.00              |                                               |
+| fecha_modificacion | datetime      | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED on update CURRENT_TIMESTAMP |
+| fecha_creacion     | datetime      | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED                             |
+| fecha_eliminacion  | datetime      | YES  |     | NULL              |                                               |
+| estado             | tinyint(1)    | YES  |     | 1                 |                                               |
++--------------------+---------------+------+-----+-------------------+-----------------------------------------------+
+9 rows in set (0,00 sec)
+
+mysql> DESCRIBE Unidad;
++--------------------+-------------------------------------------------+------+-----+-------------------+-----------------------------------------------+
+| Field              | Type                                            | Null | Key | Default           | Extra                                         |
++--------------------+-------------------------------------------------+------+-----+-------------------+-----------------------------------------------+
+| id_unidad          | int                                             | NO   | PRI | NULL              | auto_increment                                |
+| id_condominio      | int                                             | YES  | MUL | NULL              |                                               |
+| tipo               | enum('departamento','bodega','estacionamiento') | YES  |     | NULL              |                                               |
+| numero             | varchar(20)                                     | YES  |     | NULL              |                                               |
+| superficie         | decimal(10,2)                                   | YES  |     | NULL              |                                               |
+| fecha_modificacion | datetime                                        | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED on update CURRENT_TIMESTAMP |
+| fecha_creacion     | datetime                                        | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED                             |
+| fecha_eliminacion  | datetime                                        | YES  |     | NULL              |                                               |
+| estado             | tinyint(1)                                      | YES  |     | 1                 |                                               |
++--------------------+-------------------------------------------------+------+-----+-------------------+-----------------------------------------------+
+9 rows in set (0,00 sec)
+
+mysql> DESCRIBE Residente;
++--------------------+------------------------------------------------+------+-----+-------------------+-----------------------------------------------+
+| Field              | Type                                           | Null | Key | Default           | Extra                                         |
++--------------------+------------------------------------------------+------+-----+-------------------+-----------------------------------------------+
+| id_residente       | int                                            | NO   | PRI | NULL              | auto_increment                                |
+| nombre             | varchar(100)                                   | YES  |     | NULL              |                                               |
+| apellido           | varchar(100)                                   | YES  |     | NULL              |                                               |
+| rut                | varchar(20)                                    | YES  | UNI | NULL              |                                               |
+| correo             | varchar(150)                                   | YES  | MUL | NULL              |                                               |
+| telefono           | varchar(20)                                    | YES  |     | NULL              |                                               |
+| tipo               | enum('propietario','arrendatario','visitante') | YES  |     | NULL              |                                               |
+| fecha_modificacion | datetime                                       | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED on update CURRENT_TIMESTAMP |
+| fecha_creacion     | datetime                                       | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED                             |
+| fecha_eliminacion  | datetime                                       | YES  |     | NULL              |                                               |
+| estado             | tinyint(1)                                     | YES  |     | 1                 |                                               |
++--------------------+------------------------------------------------+------+-----+-------------------+-----------------------------------------------+
+11 rows in set (0,00 sec)
+
+mysql> DESCRIBE Residente_Unidad;
++---------------------+------------------------------------+------+-----+-------------------+-----------------------------------------------+
+| Field               | Type                               | Null | Key | Default           | Extra                                         |
++---------------------+------------------------------------+------+-----+-------------------+-----------------------------------------------+
+| id_residente_unidad | int                                | NO   | PRI | NULL              | auto_increment                                |
+| id_residente        | int                                | NO   | MUL | NULL              |                                               |
+| id_unidad           | int                                | NO   | MUL | NULL              |                                               |
+| rol                 | enum('propietario','arrendatario') | YES  |     | NULL              |                                               |
+| fecha_inicio        | date                               | YES  |     | NULL              |                                               |
+| fecha_fin           | date                               | YES  |     | NULL              |                                               |
+| fecha_modificacion  | datetime                           | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED on update CURRENT_TIMESTAMP |
+| fecha_creacion      | datetime                           | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED                             |
+| fecha_eliminacion   | datetime                           | YES  |     | NULL              |                                               |
+| estado              | tinyint(1)                         | YES  | MUL | 1                 |                                               |
++---------------------+------------------------------------+------+-----+-------------------+-----------------------------------------------+
+10 rows in set (0,00 sec)

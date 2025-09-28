@@ -1,56 +1,39 @@
-const sequelize = require("../config/db");
+// src/services/residenteService.js
+const Residente = require('../models/Residente');
 
 class ResidenteService {
-  static async getAll() {
-    const [rows] = await sequelize.query(`
-      SELECT r.*
-      FROM Residente r
-    `);
-    return rows;
+  async getAll() {
+    return await Residente.findAll({
+      where: { estado: 1 },
+      order: [['id_residente', 'ASC']]
+    });
   }
 
-  static async getById(id) {
-    const [rows] = await sequelize.query(
-      `SELECT r.* FROM Residente r WHERE r.id_residente = :id`,
-      { replacements: { id } }
-    );
-    return rows[0] || null;
+  async getById(id) {
+    return await Residente.findOne({
+      where: { id_residente: id, estado: 1 }
+    });
   }
 
-  static async create(data) {
-    const { nombre, apellido, rut, correo, telefono, tipo, estado } = data;
-    const [result] = await sequelize.query(
-      `INSERT INTO Residente (nombre, apellido, rut, correo, telefono, tipo, estado)
-       VALUES (:nombre, :apellido, :rut, :correo, :telefono, :tipo, :estado)`,
-      { replacements: { nombre, apellido, rut, correo, telefono, tipo, estado } }
-    );
-    return { id_residente: result, ...data };
+  async create(data) {
+    return await Residente.create(data);
   }
 
-  static async update(id, data) {
-    const fields = [];
-    const replacements = { id };
-
-    for (const key in data) {
-      fields.push(`${key} = :${key}`);
-      replacements[key] = data[key];
-    }
-
-    await sequelize.query(
-      `UPDATE Residente SET ${fields.join(", ")} WHERE id_residente = :id`,
-      { replacements }
-    );
-
-    return this.getById(id);
+  async update(id, data) {
+    const [updated] = await Residente.update(data, {
+      where: { id_residente: id, estado: 1 }
+    });
+    return updated > 0;
   }
 
-  static async delete(id) {
-    const [result] = await sequelize.query(
-      `DELETE FROM Residente WHERE id_residente = :id`,
-      { replacements: { id } }
+  async delete(id) {
+    const [updated] = await Residente.update(
+      { estado: 0, fecha_eliminacion: new Date() },
+      { where: { id_residente: id, estado: 1 } }
     );
-    return result.affectedRows > 0;
+    return updated > 0;
   }
 }
 
-module.exports = ResidenteService;
+module.exports = new ResidenteService();
+

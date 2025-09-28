@@ -11,6 +11,7 @@ const httpLogger = require("./middleware/httpLogger"); // si usas este middlewar
 const condominioRoutes = require("./routes/condominioRoutes");
 const unidadRoutes = require("./routes/unidadRoutes");
 const residenteRoutes = require("./routes/residenteRoutes");
+const residenteUnidadRoutes = require("./routes/residenteUnidadRoutes");
 const logger = require("./utils/logger");
 const errorHandler = require("./middleware/errorHandler"); // ✅ ruta corregida
 const requestLogger = require("./middleware/requestLogger"); // ✅ ruta corregida
@@ -28,6 +29,8 @@ app.use(requestLogger);    // log de requests/respuestas
 app.use("/api/condominios", condominioRoutes);
 app.use("/api/unidades", unidadRoutes);
 app.use("/api/residentes", residenteRoutes);
+app.use("/api/residente-unidades", residenteUnidadRoutes);
+
 
 // Ruta de prueba
 app.get("/api/status", (req, res) => {

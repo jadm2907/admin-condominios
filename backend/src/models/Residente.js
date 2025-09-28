@@ -33,6 +33,10 @@ const Residente = sequelize.define("Residente", {
     type: DataTypes.ENUM("propietario", "arrendatario", "visitante"),
     defaultValue: "propietario",
   },
+  fecha_eliminacion: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
   estado: {
     type: DataTypes.ENUM("activo", "inactivo"),
     defaultValue: "activo",

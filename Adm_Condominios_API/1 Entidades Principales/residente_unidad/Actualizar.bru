@@ -1,21 +1,20 @@
 meta {
   name: Actualizar
   type: http
-  seq: 4
+  seq: 2
 }
 
 put {
-  url: http://localhost:4000/api/condominios/1
+  url: http://localhost:4000/api/residente-unidades/1
   body: json
   auth: inherit
 }
 
 body:json {
   {
-    "nombre": "Condominio Central",
-    "direccion": "Av. Principal 123"
+    "rol": "arrendatario",
+    "fecha_fin": "2025-12-31"
   }
-  
 }
 
 settings {

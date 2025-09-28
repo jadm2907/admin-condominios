@@ -1,55 +1,54 @@
-const sequelize = require("../config/db");
+// src/services/condominioService.js
+const Condominio = require('../models/Condominio');
+
+
 
 class CondominioService {
-  static async getAll() {
-    const [rows] = await sequelize.query(`
-      SELECT * FROM Condominio
-    `);
-    return rows;
+  async getAll() {
+    return await Condominio.findAll({
+      where: { estado: 1 },
+      order: [['id_condominio', 'ASC']]
+    });
   }
 
-  static async getById(id) {
-    const [rows] = await sequelize.query(
-      `SELECT * FROM Condominio WHERE id_condominio = :id`,
-      { replacements: { id } }
-    );
-    return rows[0] || null;
+  async getById(id) {
+    return await Condominio.findOne({
+      where: { id_condominio: id, estado: 1 }
+    });
   }
 
-  static async create(data) {
-    const { nombre, direccion, rut, fondo_reserva } = data;
-    const [result] = await sequelize.query(
-      `INSERT INTO Condominio (nombre, direccion, rut, fondo_reserva)
-       VALUES (:nombre, :direccion, :rut, :fondo_reserva)`,
-      { replacements: { nombre, direccion, rut, fondo_reserva } }
-    );
-    return { id_condominio: result, ...data };
+  async create(data) {
+    return await Condominio.create(data);
   }
 
-  static async update(id, data) {
-    const fields = [];
-    const replacements = { id };
-
-    for (const key in data) {
-      fields.push(`${key} = :${key}`);
-      replacements[key] = data[key];
-    }
-
-    await sequelize.query(
-      `UPDATE Condominio SET ${fields.join(", ")} WHERE id_condominio = :id`,
-      { replacements }
-    );
-
-    return this.getById(id);
+  async update(id, data) {
+    const [updated] = await Condominio.update(data, {
+      where: { id_condominio: id, estado: 1 }
+    });
+    return updated > 0;
   }
 
-  static async delete(id) {
-    const [result] = await sequelize.query(
-      `DELETE FROM Condominio WHERE id_condominio = :id`,
-      { replacements: { id } }
-    );
-    return result.affectedRows > 0;
+  async delete(id) {
+  // Buscar el condominio por ID
+  const condominio = await Condominio.findOne({ where: { id_condominio: id } });
+
+  if (!condominio) {
+    return false; // No existe
   }
+
+  if (condominio.estado === 0) {
+    return false; // Ya estaba eliminado
+  }
+
+  // Soft delete: marcar eliminado y registrar fecha
+  condominio.estado = 0;
+  condominio.fecha_eliminacion = new Date();
+
+  await condominio.save();
+
+  return true;
+}
 }
 
-module.exports = CondominioService;
+module.exports = new CondominioService();
+

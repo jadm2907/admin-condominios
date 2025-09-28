@@ -1,64 +1,61 @@
-const ResidenteService = require("../services/residenteService");
-const HttpUtils = require("../utils/HttpUtils");
-const logger = require("../utils/logger");
+// src/controllers/residenteController.js
+const residenteService = require('../services/residenteService');
+const HttpUtils = require('../utils/HttpUtils');
+const logger = require('../utils/logger');
 
-exports.getResidentes = async (req, res) => {
+exports.getResidentes = async (req, res, next) => {
   try {
-    const residentes = await ResidenteService.getAll();
-    HttpUtils.successResponse(res, residentes);
+    const data = await residenteService.getAll();
+    return HttpUtils.successResponse(res, data, 200);
   } catch (error) {
-    logger.error("Error al obtener residentes:", error);
-    HttpUtils.errorResponse(res, error);
+    logger.error(`Error al obtener residentes: ${error.message}`);
+    return next(error);
   }
 };
 
-exports.getResidenteById = async (req, res) => {
+exports.getResidenteById = async (req, res, next) => {
   try {
-    const residente = await ResidenteService.getById(req.params.id);
-    if (!residente) return HttpUtils.notFoundResponse(res, "Residente no encontrado");
-    HttpUtils.successResponse(res, residente);
+    const data = await residenteService.getById(req.params.id);
+    if (!data) return HttpUtils.errorResponse(res, 'Residente no encontrado', 404);
+    return HttpUtils.successResponse(res, data, 200);
   } catch (error) {
-    logger.error("Error al obtener residente:", error);
-    HttpUtils.errorResponse(res, error);
+    logger.error(`Error al obtener residente: ${error.message}`);
+    return next(error);
   }
 };
 
-exports.createResidente = async (req, res) => {
+exports.createResidente = async (req, res, next) => {
   try {
-    const residente = await ResidenteService.create(req.body);
-    logger.info(`[SUCCESS 201] POST /api/residentes - Residente creado con éxito`);
-    return HttpUtils.createdResponse(res, residente, "Residente creado con éxito", req);
+    const data = await residenteService.create(req.body);
+    logger.info('[SUCCESS] Residente creado');
+    return HttpUtils.successResponse(res, data, 201);
   } catch (error) {
-    // Caso: violación de UNIQUE en DB (por ejemplo rut duplicado)
-    if (error && (error.name === "SequelizeUniqueConstraintError" || error.status === 409)) {
-      logger.warn(`Intento de crear residente duplicado: ${req.body?.rut || ""}`);
-      return HttpUtils.sendError(res, "Residente con ese RUT ya existe", error, 409, req);
-    }
-
-    // Otro error - manejo general
-    logger.error(`Error al crear residente: ${error && error.message}`);
-    return HttpUtils.errorResponse(res, error, req);
+    logger.error(`Error al crear residente: ${error.message}`);
+    return next(error);
   }
 };
 
-exports.updateResidente = async (req, res) => {
+exports.updateResidente = async (req, res, next) => {
   try {
-    const residente = await ResidenteService.update(req.params.id, req.body);
-    if (!residente) return HttpUtils.notFoundResponse(res, "Residente no encontrado");
-    HttpUtils.successResponse(res, residente);
+    const updated = await residenteService.update(req.params.id, req.body);
+    if (!updated) return HttpUtils.errorResponse(res, 'Residente no encontrado', 404);
+    logger.info('[SUCCESS] Residente actualizado');
+    return HttpUtils.successResponse(res, 'Residente actualizado', 200);
   } catch (error) {
-    logger.error("Error al actualizar residente:", error);
-    HttpUtils.errorResponse(res, error);
+    logger.error(`Error al actualizar residente: ${error.message}`);
+    return next(error);
   }
 };
 
-exports.deleteResidente = async (req, res) => {
+exports.deleteResidente = async (req, res, next) => {
   try {
-    const deleted = await ResidenteService.delete(req.params.id);
-    if (!deleted) return HttpUtils.notFoundResponse(res, "Residente no encontrado");
-    HttpUtils.successResponse(res, { message: "Residente eliminado con éxito" });
+    const deleted = await residenteService.delete(req.params.id);
+    if (!deleted) return HttpUtils.errorResponse(res, 'Residente no encontrado', 404);
+    logger.info('[SUCCESS] Residente eliminado (soft delete)');
+    return HttpUtils.successResponse(res, 'Residente eliminado', 200);
   } catch (error) {
-    logger.error("Error al eliminar residente:", error);
-    HttpUtils.errorResponse(res, error);
+    logger.error(`Error al eliminar residente: ${error.message}`);
+    return next(error);
   }
 };
+
